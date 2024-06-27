@@ -1,0 +1,129 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  # Allows you to run this workflow manually from the Actions tab.
+  workflow_dispatch:
+
+# Required for creating GitHub release.
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PRODUCT: flameshot
+
+jobs:
+  build-windows:
+    name: ${{ matrix.config.name }}
+    runs-on: "Windows Server 2022 / Qt 6"
+    timeout-minutes: 120
+
+    strategy:
+      matrix:
+        build_type: [Release]
+        c_compiler: [cl]
+        cpp_compiler: [cl]
+        arch: [win64_msvc2019_64]
+        platform: [x64]
+        qt: [6.7.1]
+        qt_modules: [qtwebengine qtwebchannel qtpositioning qtpdf qtimageformats qt5compat]
+
+    steps:
+      - name: Get clone
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Get cmake 
+        uses: lukka/get-cmake@latest
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        id: runvcpkg
+        with:
+          vcpkgDirectory: '${{ github.workspace }}/ThirdParty/vcpkg'
+          vcpkgJsonGlob: '${{ github.workspace }}/vcpkg-configuration.json'
+
+      - name: Install Qt Official Build
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{matrix.qt}}
+          target: desktop
+          arch: ${{matrix.arch}}
+          modules: ${{matrix.qt_modules}}
+          cache: 'true'
+
+      - name: Configure CMake
+        run: >
+          cmake -B ${{ github.workspace }}/build
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -S ${{ github.workspace }}
+
+      - name:  Build Project
+        run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }} --target all_build --
+        
+      - name:  Install Project
+        run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }} --target install --
+
+      - name: Package
+        run: cmake --build build --preset ${{ matrix.config.buildPreset }} --target package
+        env:
+          CODESIGN_CERTIFICATE_BASE64: ${{ secrets.CODESIGN_CERTIFICATE_BASE64 }}
+          CODESIGN_PASSWORD: ${{ secrets.CODESIGN_PASSWORD }}
+
+      - name: Package Source
+        run:  Start-Process msiexec.exe -ArgumentList "/a $(dir installer\windows\DB.Browser.for.SQLite-*.msi) /q TARGETDIR=$PWD\target\" -Wait
+
+      - name: Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: |
+            build/installed/zeal-${{ env.ZEAL_VERSION }}-portable-windows-x64.*
+            build/${{ matrix.config.configurePreset }}/zeal-${{ env.ZEAL_VERSION }}-windows-x64.msi*
+            build/${{ matrix.config.configurePreset }}/zeal-${{ env.ZEAL_VERSION }}.*
+
+  build-appimage:
+    name: AppImage
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build AppImage
+        uses: ./.github/workflows/appimage/
+        with:
+          recipe: pkg/appimage/appimage-amd64.yaml
+          apt_dependencies: >-
+            build-essential
+            cmake extra-cmake-modules
+            libappindicator-dev
+            libarchive-dev
+            libqt5x11extras5-dev
+            libsqlite3-dev
+            libxcb-keysyms1-dev
+            ninja-build
+            qtbase5-dev
+            qtwebengine5-dev
+
+      - name: Generate Digest Files
+        run: for file in zeal-*.AppImage*; do sha256sum $file > $file.sha256; done
+
+      - name: Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          fail_on_unmatched_files: true
+          files: |
+            zeal-*.AppImage*
