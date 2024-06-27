@@ -84,3 +84,6 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
     ${QT_LIBS}
 )
+
+include(InstallRequiredSystemLibraries)
+install(FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR})
