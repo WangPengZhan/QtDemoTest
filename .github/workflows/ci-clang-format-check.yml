@@ -33,4 +33,4 @@ jobs:
     - name: Run Clang-Format Check
       run: |
         clang-format --version
-        find . -regex 'src\.\(cpp\|h\|hpp\|cc\|cxx\)' -exec clang-format --dry-run --Werror {} +
+        find . -regex 'src\*.(cpp\|h\|hpp\|cc\|cxx\)' -exec clang-format --dry-run --Werror {} +
