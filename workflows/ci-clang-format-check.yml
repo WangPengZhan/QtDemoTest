@@ -1,0 +1,36 @@
+name: clang format check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  format-check:
+    strategy:
+      matrix:
+        os: [windows-2019, ubuntu-22.04, macos-13]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Set up Clang-Format on Ubuntu
+      if: matrix.os == 'ubuntu-22.04'
+      run: sudo apt-get install -y clang-format
+
+    - name: Set up Clang-Format on Windows
+      if: matrix.os == 'windows-2019'
+      run: |
+        choco install llvm -y
+        $Env:Path += ";C:\Program Files\LLVM\bin"
+
+    - name: Set up Clang-Format on macOS
+      if: matrix.os == 'macos-13'
+      run: brew install clang-format
+
+    - name: Run Clang-Format Check
+      run: |
+        clang-format --version
+        find . -regex 'src\.\(cpp\|h\|hpp\|cc\|cxx\)' -exec clang-format --dry-run --Werror {} +
