@@ -99,4 +99,6 @@ jobs:
         with:
           name: test
           path: |
-            dist/*
+            dist/*.zip
+            dist/*.sha256
+            dist/*.msi
