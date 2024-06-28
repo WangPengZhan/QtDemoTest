@@ -13,7 +13,7 @@
         </Directory>
 
         <ComponentGroup Id="ProductComponents">
-            <Component Id="MainExecutable">
+            <Component Id="MainExecutable" Directory="INSTALLFOLDER">
                 <File Id="MainEXE" Source="build\Release\test.exe" />
             </Component>
         </ComponentGroup>
