@@ -81,8 +81,8 @@ jobs:
 
       - name: Create .msi package
         run: |
-          candle.exe -nologo -out dist/ scripts/product.wxs
-          light.exe -nologo -out dist/product.msi dist/product.wixobj
+          candle.exe -nologo -out installer/ scripts/product.wxs
+          light.exe -nologo -out dist/product.msi installer/product.wixobj
       
       - name: Calculate SHA256 checksums for each file
         run: |
