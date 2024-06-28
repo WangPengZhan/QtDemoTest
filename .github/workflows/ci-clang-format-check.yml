@@ -1,4 +1,4 @@
-name: clang format check
+name: clang-format-check
 
 on:
   pull_request:
@@ -7,33 +7,23 @@ on:
   # Allows you to run this workflow manually from the Actions tab.
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   format-check:
-    strategy:
-      matrix:
-        os: [windows-2019, ubuntu-22.04, macos-13]
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Set up Clang-Format on Ubuntu
-      if: matrix.os == 'ubuntu-22.04'
-      run: sudo apt-get install -y clang-format
+    - name: Install clang-format
+      uses: aminya/setup-cpp@v1
+      with:
+        clangformat: 17.0.5
 
-    - name: Set up Clang-Format on Windows
-      if: matrix.os == 'windows-2019'
+    - name: Run clang-format
       run: |
-        choco install llvm -y
-        $Env:Path += ";C:\Program Files\LLVM\bin"
-
-    - name: Set up Clang-Format on macOS
-      if: matrix.os == 'macos-13'
-      run: brew install clang-format
-
-    - name: Run Clang-Format Check
-      run: |
-        clang-format --version
-        find . -regex 'src\*.(cpp\|h\|hpp\|cc\|cxx\)' -exec clang-format --dry-run --Werror {} +
+        find src -name '*.h' -o -name '*.cc' |  xargs clang-format -i -style=file -fallback-style=none
+        git diff --exit-code
