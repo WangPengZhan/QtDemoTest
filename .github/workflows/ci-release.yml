@@ -1,9 +1,10 @@
-name: Release
+name: ci-release
 
 on:
   push:
     tags:
       - "v*.*.*"
+
   # Allows you to run this workflow manually from the Actions tab.
   workflow_dispatch:
 
@@ -21,7 +22,7 @@ env:
 jobs:
   build-windows:
     name: ${{ matrix.config.name }}
-    runs-on: "Windows Server 2022 / Qt 6"
+    runs-on: windows-2019
     timeout-minutes: 120
 
     strategy:
@@ -79,10 +80,10 @@ jobs:
           Compress-Archive -Path "build/Release/*" -DestinationPath "dist/test.zip"
 
       - name: Create .msi package
-      run: |
-        mkdir -p dist
-        candle.exe -nologo -out dist/product.wixobj scripts/product.wxs
-        light.exe -nologo -out dist/product.msi dist/product.wixobj
+        run: |
+          mkdir -p dist
+          candle.exe -nologo -out dist/product.wixobj scripts/product.wxs
+          light.exe -nologo -out dist/product.msi dist/product.wixobj
       
       - name: Calculate SHA256 checksums for each file
         run: |
@@ -100,4 +101,3 @@ jobs:
           name: test
           path: |
             dist/*
-
