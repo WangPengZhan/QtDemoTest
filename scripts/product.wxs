@@ -17,5 +17,9 @@
                 <File Id="MainEXE" Source="build\Release\test.exe" />
             </Component>
         </DirectoryRef>
+
+        <Feature Id="ProductFeature" Title="sVanilla" Level="1">
+            <ComponentGroupRef Id="MainExecutable"/>
+        </Feature>
     </Product>
 </Wix>
