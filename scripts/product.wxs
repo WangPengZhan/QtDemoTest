@@ -12,14 +12,14 @@
             </Directory>
         </Directory>
 
-        <DirectoryRef Id="INSTALLFOLDER">
+        <ComponentGroup Id="ProductComponents">
             <Component Id="MainExecutable">
                 <File Id="MainEXE" Source="build\Release\test.exe" />
             </Component>
-        </DirectoryRef>
+        </ComponentGroup>
 
         <Feature Id="ProductFeature" Title="sVanilla" Level="1">
-            <ComponentGroupRef Id="MainExecutable"/>
+            <ComponentGroupRef Id="ProductComponents"/>
         </Feature>
     </Product>
 </Wix>
