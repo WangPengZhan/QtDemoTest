@@ -105,7 +105,7 @@ jobs:
 
       - name: Upload Release Assets
         run: |
-          for file in dist\*; do
+          for file in dist/*; do
             echo "Uploading $file"
             gh release upload ${{ github.ref_name }} "$file" --clobber
           done
