@@ -81,7 +81,6 @@ jobs:
 
       - name: Create .msi package
         run: |
-          mkdir -p dist
           candle.exe -nologo -out dist/product.wixobj scripts/product.wxs
           light.exe -nologo -out dist/product.msi dist/product.wixobj
       
