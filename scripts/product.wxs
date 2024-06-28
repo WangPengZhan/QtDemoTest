@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="*" Name="sVanilla" Language="1033" Version="1.0.0.0" Manufacturer="MyCompany" UpgradeCode="PUT-GUID-HERE">
+    <Product Id="*" Name="sVanilla" Language="1033" Version="1.0.0.0" Manufacturer="sVanilla studio" UpgradeCode="124623D9-35D6-4D2E-9474-2ADACC8BABBB">
         <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" />
 
         <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
@@ -12,8 +12,10 @@
             </Directory>
         </Directory>
 
-        <Feature Id="ProductFeature" Title="sVanilla" Level="1">
-            <ComponentGroupRef Id="ProductComponents" />
-        </Feature>
+        <DirectoryRef Id="INSTALLFOLDER">
+            <Component Id="MainExecutable">
+                <File Id="MainEXE" Source="build\Debug\test.exe" />
+            </Component>
+        </DirectoryRef>
     </Product>
 </Wix>
