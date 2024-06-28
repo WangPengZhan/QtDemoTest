@@ -14,7 +14,7 @@
 
         <DirectoryRef Id="INSTALLFOLDER">
             <Component Id="MainExecutable">
-                <File Id="MainEXE" Source="build\Debug\test.exe" />
+                <File Id="MainEXE" Source="build\Release\test.exe" />
             </Component>
         </DirectoryRef>
     </Product>
