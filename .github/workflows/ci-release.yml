@@ -86,11 +86,10 @@ jobs:
       
       - name: Calculate SHA256 checksums for each file
         run: |
-          mkdir -p dist/sha256sums
           $Files = Get-ChildItem -File -Path "dist/*"
           foreach ($File in $Files) {
               $Hash = Get-FileHash $File.FullName -Algorithm SHA256
-              $HashFile = "dist/sha256sums/$($File.Name).sha256"
+              $HashFile = "dist/$($File.Name).sha256"
               "$($Hash.Hash) *$($File.Name)" | Out-File -FilePath $HashFile
           }
 
@@ -105,9 +104,10 @@ jobs:
 
       - name: Upload Release Assets
         run: |
-          for file in dist/*; do
-            echo "Uploading $file"
-            gh release upload ${{ github.ref_name }} "$file" --clobber
-          done
+          $files = Get-ChildItem -Path dist\*;
+          foreach ($file in $files) {
+            Write-Output "Uploading $file"
+            gh release upload ${{ github.ref_name }} "$file.FullName" --clobber
+          }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
