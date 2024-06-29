@@ -25,5 +25,8 @@ jobs:
 
     - name: Run clang-format
       run: |
-        find src -name '*.h' -o -name '*.cc' |  xargs clang-format -i -style=file -fallback-style=none
-        git diff --exit-code
+        extensions=("h" "hpp" "c" "cpp")
+        for ext in "${extensions[@]}"; do
+          find src/client -type f -name "*.$ext" | xargs clang-format -i -style=file -fallback-style=none
+          git diff --exit-code
+        done
