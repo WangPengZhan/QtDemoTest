@@ -94,7 +94,7 @@ jobs:
           $Files = Get-ChildItem -File -Path "${{ matrix.asset_path }}/*"
           foreach ($File in $Files) {
               $Hash = Get-FileHash $File.FullName -Algorithm SHA256
-              $HashFile = "dist/$($File.Name).sha256"
+              $HashFile = "${{ matrix.asset_path }}/$($File.Name).sha256"
               "$($Hash.Hash) *$($File.Name)" | Out-File -FilePath $HashFile
           }
 
@@ -103,9 +103,9 @@ jobs:
         with:
           name: test
           path: |
-            dist/*.zip
-            dist/*.sha256
-            dist/*.msi
+            ${{ matrix.asset_path }}/*.zip
+            ${{ matrix.asset_path }}/*.sha256
+            ${{ matrix.asset_path }}/*.msi
 
       - name: Upload Release Assets
         run: |
