@@ -80,12 +80,12 @@ jobs:
       - name: Zip Package
         run: |
           if not exist ${{ matrix.asset_path }} mkdir -p ${{ matrix.asset_path }}
-          Compress-Archive -Path ${{ matrix.asset_path }} -DestinationPath ${{ matrix.asset_path }}/win_${{ matrix.asset_path }}_${{ evn.product_name}}.zip
+          Compress-Archive -Path ${{ matrix.asset_path }} -DestinationPath ${{ matrix.asset_path }}/win_${{ matrix.asset_path }}_${{ env.product_name}}.zip
 
       - name: Create .msi package
         run: |
           candle.exe -nologo -out installer/ scripts/product.wxs
-          light.exe -nologo -out ${{ matrix.asset_path }}/win_${{ matrix.asset_path }}_${{ evn.product_name}}.msi installer/product.wixobj
+          light.exe -nologo -out ${{ matrix.asset_path }}/win_${{ matrix.asset_path }}_${{ env.product_name}}.msi installer/product.wixobj
       
       - name: Calculate SHA256 checksums for each file
         run: |
