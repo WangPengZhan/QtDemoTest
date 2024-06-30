@@ -23,6 +23,13 @@ jobs:
       with:
         clangformat: 17.0.5
 
+    - name: Cache clang-format
+      uses: actions/cache@v3
+      with:
+        path: |
+          /usr/bin/clang-format
+        key: ${{ runner.os }}-clang-format-${{ hashFiles('**/*.cpp', '**/*.h') }}
+
     - name: Run clang-format
       run: |
         extensions=("h" "hpp" "c" "cpp")

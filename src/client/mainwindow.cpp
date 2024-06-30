@@ -9,9 +9,11 @@ MainWindow::MainWindow(QWidget* parent)
     setUi();
 }
 
-MainWindow::~MainWindow(){
+MainWindow::~MainWindow()
+{
     delete ui;
 }
 
-void MainWindow::setUi(){
+void MainWindow::setUi()
+{
 }
