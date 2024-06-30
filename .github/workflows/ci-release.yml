@@ -79,8 +79,10 @@ jobs:
 
       - name: Zip Package
         run: |
-          [ ! -d ${{ matrix.asset_path }} ] && mkdir -p ${{ matrix.asset_path }}
-          Compress-Archive -Path ${{ matrix.asset_path }} -DestinationPath ${{ matrix.asset_path }}/win_${{ matrix.asset_path }}_${{ env.product_name}}.zip
+          if (-Not (Test-Path ${{ matrix.asset_path }})) {
+              New-Item -Path ${{ matrix.asset_path }} -ItemType Directory
+          }
+          Compress-Archive -Path ${{ matrix.install_path }} -DestinationPath ${{ matrix.asset_path }}/win_${{ env.product_name}}.zip
 
       - name: Create .msi package
         run: |
