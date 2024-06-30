@@ -87,11 +87,11 @@ jobs:
       - name: Create .msi package
         run: |
           candle.exe -nologo -out installer/ scripts/product.wxs
-          light.exe -nologo -out ${{ matrix.asset_path }}/win_${{ matrix.asset_path }}_${{ env.product_name}}.msi installer/product.wixobj
+          light.exe -nologo -out ${{ matrix.asset_path }}/win_${{ env.product_name}}.msi installer/product.wixobj
       
       - name: Calculate SHA256 checksums for each file
         run: |
-          $Files = Get-ChildItem -File -Path "dist/*"
+          $Files = Get-ChildItem -File -Path "${{ matrix.asset_path }}/*"
           foreach ($File in $Files) {
               $Hash = Get-FileHash $File.FullName -Algorithm SHA256
               $HashFile = "dist/$($File.Name).sha256"
@@ -109,7 +109,7 @@ jobs:
 
       - name: Upload Release Assets
         run: |
-          $files = Get-ChildItem -Path dist\*;
+          $files = Get-ChildItem -Path ${{ matrix.asset_path }}/*;
           foreach ($file in $files) {
             Write-Output "Uploading $file"
             gh release upload ${{ github.ref_name }} "$($file.FullName)" --clobber
