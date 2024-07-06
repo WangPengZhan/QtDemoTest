@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="/">
+    <file>aria2.conf</file>
+    <file>style\dark.json</file>
+    <file>style\light.json</file>
+  </qresource>
+</RCC>
